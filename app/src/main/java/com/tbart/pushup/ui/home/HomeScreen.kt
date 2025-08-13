@@ -28,7 +28,9 @@ import com.tbart.pushup.ui.theme.PushUpTheme
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = viewModel()
+    viewModel: HomeViewModel = viewModel(),
+    onStartNewSession: () -> Unit,
+    onResumeSession: (Int) -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -42,8 +44,8 @@ fun HomeScreen(
     } else {
         HomeContent(
             uiState = uiState,
-            onStartNewSession = viewModel::startNewSession,
-            onResumeSession = viewModel::resumeSession
+            onStartNewSession = onStartNewSession,
+            onResumeSession = { onResumeSession(123) } // TODO remplacer 123 par vrai ID
         )
     }
 }
