@@ -2,6 +2,8 @@ package com.tbart.pushup.ui.session
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.room.util.copy
+import com.tbart.pushup.domain.model.Exercise
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +14,7 @@ data class SessionUiState(
     val sessionId: Int? = null,
     val title: String = "",
     val date: String = "",
-    val exercises: List<String> = emptyList(), // temporaire
+    val exercises: List<Exercise> = emptyList(), // temporaire
     val errorMessage: String? = null
 )
 
@@ -55,7 +57,10 @@ class SessionViewModel(
                     sessionId = sessionId,
                     title = "Séance du 12 août",
                     date = "12/08/2025",
-                    exercises = listOf("Pompes", "Squats", "Planche")
+                    exercises = listOf(
+                        Exercise(id = 1, sessionId = sessionId, name = "Pompes", repetitions = 15, weight = 0f),
+                        Exercise(id = 2, sessionId = sessionId, name = "Squats", repetitions = 20, weight = 0f)
+                    ) // exemple de données
                 )
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
@@ -65,4 +70,13 @@ class SessionViewModel(
             }
         }
     }
+
+    fun updateExerciseRepetitions(exerciseId: Int, newReps: Int) {
+        val updatedList = _uiState.value.exercises.map { exercise ->
+            if (exercise.id == exerciseId) exercise.copy(repetitions = newReps)
+            else exercise
+        }
+        _uiState.value = _uiState.value.copy(exercises = updatedList)
+    }
+
 }
