@@ -79,4 +79,21 @@ class SessionViewModel(
         _uiState.value = _uiState.value.copy(exercises = updatedList)
     }
 
+    fun addExerciseToSession(name: String, repetitions: Int = 10, weight: Float = 0f) {
+        val currentExercises = _uiState.value.exercises.toMutableList()
+        val nextId = (currentExercises.maxOfOrNull { it.id } ?: 0) + 1
+
+        val newExercise = Exercise(
+            id = nextId,
+            sessionId = _uiState.value.sessionId ?: 0,
+            name = name,
+            repetitions = repetitions,
+            weight = weight
+        )
+
+        currentExercises.add(newExercise)
+        _uiState.value = _uiState.value.copy(exercises = currentExercises)
+    }
+
+
 }
