@@ -7,13 +7,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.tbart.pushup.data.repository.SessionRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateSessionScreen(
-    viewModel: SessionViewModel = viewModel(),
-    onSessionCreated: (Int) -> Unit
+    onSessionCreated: (Int) -> Unit,
+    sessionRepository: SessionRepository
+
 ) {
+    val viewModel: SessionViewModel = viewModel(
+        factory = SessionViewModelFactory(sessionRepository)
+    )
+
     val uiState by viewModel.uiState.collectAsState()
 
     if (uiState.isLoading) {
@@ -31,7 +37,11 @@ fun CreateSessionScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Exercices :", style = MaterialTheme.typography.titleMedium)
+            uiState.exercises.forEach { ex ->
+                Text("• ${ex.name} - ${ex.repetitions} reps")
+            }
+            Text("Exercices sélectionnés :", style = MaterialTheme.typography.titleMedium)
+
             Spacer(Modifier.height(10.dp))
 
             var selectedExercise by remember { mutableStateOf("") }
@@ -68,7 +78,6 @@ fun CreateSessionScreen(
 
             Spacer(Modifier.height(8.dp))
 
-// Bouton ajouter
             Button(
                 onClick = {
                     if (selectedExercise.isNotEmpty()) {
@@ -81,8 +90,6 @@ fun CreateSessionScreen(
                 Text("Ajouter à la séance")
             }
 
-            Spacer(Modifier.height(16.dp))
-            Text("Créer une nouvelle séance", style = MaterialTheme.typography.headlineMedium)
             Spacer(Modifier.height(24.dp))
             Button(onClick = {
                 viewModel.createNewSession()
