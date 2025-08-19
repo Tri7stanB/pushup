@@ -12,15 +12,20 @@ import com.tbart.pushup.data.repository.SessionRepository
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateSessionScreen(
+    sessionId: Int, // Reçoit l'ID de session créée depuis HomeScreen
     onSessionCreated: (Int) -> Unit,
     sessionRepository: SessionRepository
-
 ) {
     val viewModel: SessionViewModel = viewModel(
         factory = SessionViewModelFactory(sessionRepository)
     )
 
     val uiState by viewModel.uiState.collectAsState()
+
+    // Initialiser le ViewModel avec l'ID de session existant
+    LaunchedEffect(sessionId) {
+        viewModel.loadSession(sessionId)
+    }
 
     if (uiState.isLoading) {
         Box(
@@ -37,13 +42,55 @@ fun CreateSessionScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            uiState.exercises.forEach { ex ->
-                Text("• ${ex.name} - ${ex.repetitions} reps")
+            Text(
+                "Préparez votre séance",
+                style = MaterialTheme.typography.headlineMedium
+            )
+
+            Spacer(Modifier.height(32.dp))
+
+            // Afficher les exercices actuels de la session
+            Text(
+                "Exercices sélectionnés :",
+                style = MaterialTheme.typography.titleMedium
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            if (uiState.exercises.isNotEmpty()) {
+                uiState.exercises.forEach { exercise ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text("${exercise.name}")
+                            Text(
+                                "${exercise.repetitions} reps",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            } else {
+                Text(
+                    "Aucun exercice ajouté pour le moment",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
-            Text("Exercices sélectionnés :", style = MaterialTheme.typography.titleMedium)
 
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(24.dp))
 
+            // Interface pour ajouter des exercices
             var selectedExercise by remember { mutableStateOf("") }
             val availableExercises = listOf("Pompes", "Squats", "Tractions", "Abdos", "Fentes")
             var expanded by remember { mutableStateOf(false) }
@@ -90,16 +137,39 @@ fun CreateSessionScreen(
                 Text("Ajouter à la séance")
             }
 
-            Spacer(Modifier.height(24.dp))
-            Button(onClick = {
-                viewModel.createNewSession()
-                uiState.sessionId?.let { onSessionCreated(it) }
-            }) {
-                Text("Commencer")
+            Spacer(Modifier.height(32.dp))
+
+            // Boutons pour continuer
+            Button(
+                onClick = {
+                    onSessionCreated(sessionId)
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Commencer ma séance")
             }
-            uiState.errorMessage?.let {
+
+            Spacer(Modifier.height(8.dp))
+
+            if (uiState.exercises.isEmpty()) {
+                OutlinedButton(
+                    onClick = {
+                        onSessionCreated(sessionId)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Commencer sans exercices")
+                }
+            }
+
+            // Gestion des erreurs
+            uiState.errorMessage?.let { error ->
                 Spacer(Modifier.height(16.dp))
-                Text(it, color = MaterialTheme.colorScheme.error)
+                Text(
+                    text = error,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
             }
         }
     }

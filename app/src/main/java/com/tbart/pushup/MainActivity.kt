@@ -57,16 +57,24 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable(NavRoutes.Home.route) {
                             HomeScreen(
-                                onStartNewSession = {
-                                    navController.navigate(NavRoutes.CreateSession.route)
+                                sessionRepository = sessionRepository,
+                                onStartNewSession = { sessionId ->
+                                    navController.navigate(NavRoutes.CreateSession.createRoute(sessionId))
                                 },
                                 onResumeSession = { sessionId ->
                                     navController.navigate(NavRoutes.SessionDetails.createRoute(sessionId))
                                 }
                             )
                         }
-                        composable(NavRoutes.CreateSession.route) {
+                        composable(
+                            route = NavRoutes.CreateSession.route,
+                            arguments = listOf(
+                                navArgument("sessionId") { type = NavType.IntType }
+                            )
+                        ) { backStackEntry ->
+                            val sessionId = backStackEntry.arguments?.getInt("sessionId") ?: 0
                             CreateSessionScreen(
+                                sessionId = sessionId,
                                 onSessionCreated = { sessionId ->
                                     navController.navigate(NavRoutes.SessionDetails.createRoute(sessionId))
                                 },
@@ -85,7 +93,8 @@ class MainActivity : ComponentActivity() {
                             val sessionId = backStackEntry.arguments?.getInt("sessionId") ?: 0
                             SessionDetailsScreen(
                                 sessionId = sessionId,
-                                sessionRepository = sessionRepository)
+                                sessionRepository = sessionRepository
+                            )
                         }
                     }
                 }

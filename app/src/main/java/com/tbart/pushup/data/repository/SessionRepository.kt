@@ -23,9 +23,9 @@ class SessionRepository(
     fun getPastSessions(): Flow<List<Session>> =
         sessionDao.getPastSessions(LocalDateTime.now())
 
-    suspend fun addSession(session: Session): Long {
+    suspend fun addSession(session: Session): Int {
         sessionDao.insertSession(session)
-        return session.id.toLong()
+        return session.id
     }
 
     suspend fun deleteSession(session: Session) =
@@ -40,5 +40,15 @@ class SessionRepository(
 
     suspend fun deleteExercise(exercise: Exercise) =
         exerciseDao.deleteExercise(exercise)
+
+    suspend fun getSessionById(id: Int): Session? {
+        return sessionDao.getSessionById(id)
+    }
+
+    suspend fun getExercisesForSession(sessionId: Int): List<Exercise> {
+        return exerciseDao.getExercisesBySessionSync(sessionId)
+    }
+
+
 }
 

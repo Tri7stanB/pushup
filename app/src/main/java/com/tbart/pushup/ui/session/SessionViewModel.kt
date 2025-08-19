@@ -61,6 +61,44 @@ class SessionViewModel(
         }
     }
 
+    fun loadSession(sessionId: Int) {
+        currentSessionId = sessionId
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true, errorMessage = null) }
+
+            try {
+                // Charger la session existante
+                val session = sessionRepository.getSessionById(sessionId)
+                val exercises = sessionRepository.getExercisesForSession(sessionId)
+
+                if (session != null) {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            sessionId = sessionId,
+                            exercises = exercises
+                        )
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = "Session introuvable"
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isLoading = false,
+                        errorMessage = "Erreur lors du chargement de la session"
+                    )
+                }
+            }
+        }
+    }
+
+
     fun loadSessionDetails(sessionId: Int) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }

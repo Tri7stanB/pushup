@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,14 +26,26 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tbart.pushup.ui.theme.PushUpTheme
+import com.tbart.pushup.data.repository.SessionRepository
 
 @Composable
 fun HomeScreen(
-    viewModel: HomeViewModel = viewModel(),
-    onStartNewSession: () -> Unit,
+    sessionRepository: SessionRepository,
+    onStartNewSession: (Int) -> Unit, // Passe l'ID de session créée vers CreateSession
     onResumeSession: (Int) -> Unit
 ) {
+    // Utilisez un ViewModel qui peut créer des sessions
+    val viewModel: HomeViewModel = viewModel(
+        factory = HomeViewModelFactory(sessionRepository)
+    )
+
     val uiState by viewModel.uiState.collectAsState()
+
+    // Observez les changements d'état pour navigation vers CreateSession
+    uiState.newSessionId?.let { sessionId ->
+        onStartNewSession(sessionId)
+        viewModel.onNavigationHandled() // Reset l'état après navigation
+    }
 
     if (uiState.isLoading) {
         Box(
@@ -44,8 +57,8 @@ fun HomeScreen(
     } else {
         HomeContent(
             uiState = uiState,
-            onStartNewSession = onStartNewSession,
-            onResumeSession = { onResumeSession(123) } // TODO remplacer 123 par vrai ID
+            onStartNewSession = { viewModel.createNewSession() }, // Créer la session ici
+            onResumeSession = { onResumeSession(uiState.activeSessionId ?: 0) }
         )
     }
 }
@@ -80,6 +93,22 @@ private fun HomeContent(
             Spacer(modifier = Modifier.height(24.dp))
         }
 
+        // Gestion des erreurs
+        uiState.errorMessage?.let { error ->
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.errorContainer
+                )
+            ) {
+                Text(
+                    text = error,
+                    modifier = Modifier.padding(16.dp),
+                    color = MaterialTheme.colorScheme.onErrorContainer
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+
         // Boutons d'action
         if (uiState.hasActiveSession) {
             Button(
@@ -100,9 +129,14 @@ private fun HomeContent(
         } else {
             Button(
                 onClick = onStartNewSession,
-                modifier = Modifier.padding(horizontal = 32.dp)
+                modifier = Modifier.padding(horizontal = 32.dp),
+                enabled = !uiState.isLoading
             ) {
-                Text("Commencer ma séance")
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.size(16.dp))
+                } else {
+                    Text("Commencer ma séance")
+                }
             }
         }
     }
