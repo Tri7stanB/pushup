@@ -14,6 +14,6 @@ sealed class NavRoutes(val route: String, val title: String, val icon: ImageVect
         fun createRoute(date: String) = "agenda/$date"
     }
     object SessionDetails : NavRoutes("session/{sessionId}", "Détails", Icons.Default.Info) {
-        fun createRoute(sessionId: Int) = "session_details/$sessionId"
+        fun createRoute(sessionId: Int) = "session/$sessionId"
     }
 }

@@ -15,7 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.tbart.pushup.navigation.BottomNavBar
 import com.tbart.pushup.navigation.NavRoutes
-import com.tbart.pushup.ui.screens.home.HomeScreen
+import com.tbart.pushup.ui.home.HomeScreen
 import com.tbart.pushup.ui.session.CreateSessionScreen
 import com.tbart.pushup.ui.session.SessionDetailsScreen
 import com.tbart.pushup.ui.theme.PushUpTheme

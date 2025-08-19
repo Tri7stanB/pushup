@@ -1,4 +1,4 @@
-package com.tbart.pushup.ui.screens.home
+package com.tbart.pushup.ui.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

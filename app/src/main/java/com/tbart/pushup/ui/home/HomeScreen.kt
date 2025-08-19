@@ -1,4 +1,4 @@
-package com.tbart.pushup.ui.screens.home
+package com.tbart.pushup.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
