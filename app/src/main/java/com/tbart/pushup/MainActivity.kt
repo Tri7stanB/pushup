@@ -3,13 +3,17 @@ package com.tbart.pushup
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.tbart.pushup.navigation.BottomNavBar
 import com.tbart.pushup.navigation.NavRoutes
 import com.tbart.pushup.ui.screens.home.HomeScreen
 import com.tbart.pushup.ui.session.CreateSessionScreen
@@ -21,12 +25,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             PushUpTheme {
-                Surface(color = MaterialTheme.colorScheme.background) {
-                    val navController = rememberNavController()
+                val navController = rememberNavController()
 
+                Scaffold(
+                    bottomBar = { BottomNavBar(navController) }
+                ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = NavRoutes.Home.route
+                        startDestination = NavRoutes.Home.route,
+                        modifier = Modifier.padding(innerPadding)
                     ) {
                         composable(NavRoutes.Home.route) {
                             HomeScreen(

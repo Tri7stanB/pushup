@@ -1,9 +1,15 @@
 package com.tbart.pushup.navigation
 
-sealed class NavRoutes(val route: String) {
-    object Home : NavRoutes("home")
-    object CreateSession : NavRoutes("create_session")
-    object SessionDetails : NavRoutes("session_details/{sessionId}") {
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.ui.graphics.vector.ImageVector
+
+sealed class NavRoutes(val route: String, val title: String, val icon: ImageVector) {
+    object Home : NavRoutes("home", "Accueil", Icons.Default.Home)
+    object CreateSession : NavRoutes("create_session", "Nouvelle", Icons.Default.Add)
+    object SessionDetails : NavRoutes("session/{sessionId}", "Détails", Icons.Default.Info) {
         fun createRoute(sessionId: Int) = "session_details/$sessionId"
     }
 }
