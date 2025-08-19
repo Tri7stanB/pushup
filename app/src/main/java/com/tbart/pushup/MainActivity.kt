@@ -52,6 +52,9 @@ class MainActivity : ComponentActivity() {
                                 }
                             )
                         }
+                        composable(NavRoutes.Agenda.route) {
+                            // TODO
+                        }
                         composable(
                             route = NavRoutes.SessionDetails.route,
                             arguments = listOf(

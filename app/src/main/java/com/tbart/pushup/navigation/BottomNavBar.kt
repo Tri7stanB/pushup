@@ -14,7 +14,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 fun BottomNavBar(navController: NavHostController) {
     val items = listOf(
         NavRoutes.Home,
-        NavRoutes.CreateSession
+        NavRoutes.CreateSession,
+        NavRoutes.Agenda
     )
 
     NavigationBar {
