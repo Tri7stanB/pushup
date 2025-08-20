@@ -24,8 +24,7 @@ class SessionRepository(
         sessionDao.getPastSessions(LocalDateTime.now())
 
     suspend fun addSession(session: Session): Int {
-        sessionDao.insertSession(session)
-        return session.id
+        return sessionDao.insertSession(session).toInt()
     }
 
     suspend fun deleteSession(session: Session) =
