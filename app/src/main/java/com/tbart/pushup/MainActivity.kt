@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -15,16 +16,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.room.Room
+import com.example.pushup.BottomNavBar
 import com.tbart.pushup.data.database.AppDatabase
 import com.tbart.pushup.data.repository.SessionRepository
-import com.tbart.pushup.navigation.BottomNavBar
 import com.tbart.pushup.navigation.NavRoutes
 import com.tbart.pushup.ui.home.HomeScreen
 import com.tbart.pushup.ui.session.CreateSessionScreen
 import com.tbart.pushup.ui.session.SessionDetailsScreen
+import com.tbart.pushup.domain.model.Session
 import com.tbart.pushup.ui.session.SessionViewModel
 import com.tbart.pushup.ui.session.SessionViewModelFactory
 import com.tbart.pushup.ui.theme.PushUpTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,7 +40,7 @@ class MainActivity : ComponentActivity() {
             "pushup-db"
         ).build()
 
-        // Repository (injecte tes DAO)
+        // Repository
         val sessionRepository = SessionRepository(
             db.sessionDao(),
             db.exerciseDao()
@@ -46,9 +49,25 @@ class MainActivity : ComponentActivity() {
         setContent {
             PushUpTheme {
                 val navController = rememberNavController()
+                val scope = rememberCoroutineScope()
 
                 Scaffold(
-                    bottomBar = { BottomNavBar(navController) }
+                    bottomBar = {
+                        BottomNavBar(
+                            navController = navController,
+                            onNewSessionClick = {
+                                scope.launch {
+                                    val sessionId = sessionRepository.addSession(
+                                        Session(
+                                            title = "Nouvelle séance",
+                                            date = System.currentTimeMillis()
+                                        )
+                                    )
+                                    navController.navigate(NavRoutes.CreateSession.createRoute(sessionId))
+                                }
+                            }
+                        )
+                    }
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
@@ -75,14 +94,14 @@ class MainActivity : ComponentActivity() {
                             val sessionId = backStackEntry.arguments?.getInt("sessionId") ?: 0
                             CreateSessionScreen(
                                 sessionId = sessionId,
-                                onSessionCreated = { sessionId ->
-                                    navController.navigate(NavRoutes.SessionDetails.createRoute(sessionId))
+                                onSessionCreated = { newId ->
+                                    navController.navigate(NavRoutes.CreateSession.createRoute(newId))
                                 },
                                 sessionRepository = sessionRepository
                             )
                         }
                         composable(NavRoutes.Agenda.route) {
-                            // TODO
+                            // TODO : écran agenda
                         }
                         composable(
                             route = NavRoutes.SessionDetails.route,

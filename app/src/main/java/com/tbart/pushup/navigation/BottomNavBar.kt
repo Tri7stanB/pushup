@@ -1,39 +1,35 @@
-package com.tbart.pushup.navigation
+package com.example.pushup
 
-import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.tbart.pushup.navigation.NavRoutes
 
 @Composable
-fun BottomNavBar(navController: NavHostController) {
-    val items = listOf(
-        NavRoutes.Home,
-        NavRoutes.CreateSession,
-        NavRoutes.Agenda
-    )
+fun BottomNavBar(
+    navController: NavController,
+    onNewSessionClick: () -> Unit
+) {
+    val navBackStackEntry = navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry.value?.destination?.route
 
     NavigationBar {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentDestination = navBackStackEntry?.destination
+        listOf(NavRoutes.Home, NavRoutes.CreateSession, NavRoutes.Agenda).forEach { route ->
+            val selected = currentRoute?.startsWith(route.route.substringBefore("/{")) == true
 
-        items.forEach { screen ->
             NavigationBarItem(
-                selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                icon = { Icon(route.icon, contentDescription = route.title) },
+                label = { Text(route.title) },
+                selected = selected,
                 onClick = {
-                    navController.navigate(screen.route) {
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
+                    when (route) {
+                        is NavRoutes.CreateSession -> onNewSessionClick()
+                        else -> navController.navigate(route.route) {
+                            launchSingleTop = true
+                        }
                     }
-                },
-                icon = { Icon(screen.icon, contentDescription = screen.title) },
-                label = { Text(screen.title) }
+                }
             )
         }
     }
