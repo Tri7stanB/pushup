@@ -156,7 +156,6 @@ private fun HomeContent(
                         onClick = onResumeSession,
                         shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.weight(1f).padding(start = 8.dp),
-
                         ) {
                         Text("Reprendre ma séance", textAlign = TextAlign.Center)
                     }
