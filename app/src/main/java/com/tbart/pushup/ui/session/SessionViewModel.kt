@@ -70,7 +70,7 @@ class SessionViewModel(
                 // Charger la session existante
                 val session = sessionRepository.getSessionById(sessionId)
                 if (session != null) {
-                    observeExercises(sessionId) // 👈 démarre l'observation en continu
+                    observeExercises(sessionId)
 
                     _uiState.update {
                         it.copy(
