@@ -130,7 +130,8 @@ class SessionViewModel(
                         sessionId = id,
                         name = name,
                         repetitions = repetitions,
-                        weight = weight
+                        weight = weight,
+                        muscleGroup = "", // Tu peux ajouter des groupes musculaires si nécessaire
                     )
                 )
             } catch (e: Exception) {

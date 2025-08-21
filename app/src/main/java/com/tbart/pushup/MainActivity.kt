@@ -6,9 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -20,14 +18,16 @@ import androidx.navigation.navArgument
 import androidx.room.Room
 import com.example.pushup.BottomNavBar
 import com.tbart.pushup.data.database.AppDatabase
+import com.tbart.pushup.data.repository.ExerciseTemplateRepository
 import com.tbart.pushup.data.repository.SessionRepository
 import com.tbart.pushup.navigation.NavRoutes
 import com.tbart.pushup.ui.home.HomeScreen
 import com.tbart.pushup.ui.session.CreateSessionScreen
 import com.tbart.pushup.ui.session.SessionDetailsScreen
 import com.tbart.pushup.domain.model.Session
-import com.tbart.pushup.ui.session.SessionViewModel
-import com.tbart.pushup.ui.session.SessionViewModelFactory
+import com.tbart.pushup.ui.exercises.ExercisesScreen
+import com.tbart.pushup.ui.exercises.ExercisesViewModel
+import com.tbart.pushup.ui.exercises.ExercisesViewModelFactory
 import com.tbart.pushup.ui.theme.PushUpTheme
 import kotlinx.coroutines.launch
 
@@ -38,15 +38,20 @@ class MainActivity : ComponentActivity() {
 
         // Instance DB
         val db = Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java,
-            "pushup-db"
-        ).build()
+                applicationContext,
+                AppDatabase::class.java,
+                "pushup-db"
+            ).fallbackToDestructiveMigration(false)
+            .build()
 
         // Repository
         val sessionRepository = SessionRepository(
             db.sessionDao(),
             db.exerciseDao()
+        )
+
+        val exerciseTemplateRepository = ExerciseTemplateRepository(
+            db.exerciseTemplateDao()
         )
 
         setContent {
@@ -106,6 +111,13 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(NavRoutes.Agenda.route) {
                             // TODO : écran agenda
+                        }
+                        composable(NavRoutes.Exercises.route) {
+                            val exerciseTemplateRepository = ExerciseTemplateRepository(db.exerciseTemplateDao())
+                            val viewModel: ExercisesViewModel = viewModel(
+                                factory = ExercisesViewModelFactory(exerciseTemplateRepository)
+                            )
+                            ExercisesScreen(viewModel = viewModel)
                         }
                         composable(
                             route = NavRoutes.SessionDetails.route,

@@ -9,5 +9,7 @@ data class Exercise(
     val sessionId: Int,
     val name: String,
     val repetitions: Int,
-    val weight: Float
+    val weight: Float,
+    val muscleGroup: String,
+    val isFavorite: Boolean = false
 )

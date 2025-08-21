@@ -2,6 +2,7 @@ package com.tbart.pushup.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -14,8 +15,9 @@ sealed class NavRoutes(val route: String, val title: String, val icon: ImageVect
     object SessionDetails : NavRoutes("session/{sessionId}", "Détails", Icons.Default.Info) {
         fun createRoute(sessionId: Int) = "session/$sessionId"
     }
-    object Agenda : NavRoutes("agenda", "Agenda", Icons.Default.Info) {
+    object Agenda : NavRoutes("agenda", "Agenda", Icons.Default.DateRange) {
         const val routeWithDate = "agenda/{date}"
         fun createRoute(date: String) = "agenda/$date"
     }
+    object Exercises : NavRoutes("exercices", "Exercises", Icons.Default.Info)
 }

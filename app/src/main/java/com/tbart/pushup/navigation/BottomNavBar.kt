@@ -15,7 +15,7 @@ fun BottomNavBar(
     val currentRoute = navBackStackEntry.value?.destination?.route
 
     NavigationBar {
-        listOf(NavRoutes.Home, NavRoutes.CreateSession, NavRoutes.Agenda).forEach { route ->
+        listOf(NavRoutes.Home, NavRoutes.CreateSession, NavRoutes.Exercises, NavRoutes.Agenda).forEach { route ->
             val selected = currentRoute?.startsWith(route.route.substringBefore("/{")) == true
 
             NavigationBarItem(
