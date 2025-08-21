@@ -15,8 +15,11 @@ interface SessionDao {
     fun getPastSessions(now: LocalDateTime): Flow<List<Session>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSession(session: Session)
+    suspend fun insertSession(session: Session) : Long
 
     @Delete
     suspend fun deleteSession(session: Session)
+
+    @Query("SELECT * FROM sessions WHERE id = :id")
+    suspend fun getSessionById(id: Int): Session?
 }
