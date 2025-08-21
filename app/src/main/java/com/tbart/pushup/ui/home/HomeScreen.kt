@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -132,21 +133,36 @@ private fun HomeContent(
 
         // Boutons d'action
         if (uiState.hasActiveSession) {
-            Button(
-                onClick = onResumeSession,
-                modifier = Modifier.padding(horizontal = 32.dp)
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.BottomCenter
             ) {
-                Text("Reprendre ma séance")
+                Row(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    OutlinedButton(
+                        onClick = onStartNewSession,
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.weight(1f).padding(end = 8.dp)
+
+                        ) {
+                        Text("Nouvelle séance", textAlign = TextAlign.Center)
+                    }
+
+                    Button(
+                        onClick = onResumeSession,
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.weight(1f).padding(start = 8.dp),
+
+                        ) {
+                        Text("Reprendre ma séance", textAlign = TextAlign.Center)
+                    }
+                }
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            OutlinedButton(
-                onClick = onStartNewSession,
-                modifier = Modifier.padding(horizontal = 32.dp)
-            ) {
-                Text("Nouvelle séance")
-            }
         } else {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -154,7 +170,7 @@ private fun HomeContent(
             ) {
                 FloatingActionButton(
                     onClick = onStartNewSession,
-                    shape = RoundedCornerShape(12.dp), // coins arrondis personnalisés
+                    shape = RoundedCornerShape(12.dp),
                     modifier = Modifier
                         .padding(32.dp)
                         .size(height = 45.dp, width = 320.dp)
