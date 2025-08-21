@@ -1,8 +1,10 @@
 package com.tbart.pushup
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -30,6 +32,7 @@ import com.tbart.pushup.ui.theme.PushUpTheme
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -95,10 +98,11 @@ class MainActivity : ComponentActivity() {
                             CreateSessionScreen(
                                 sessionId = sessionId,
                                 onSessionCreated = { newId ->
-                                    navController.navigate(NavRoutes.CreateSession.createRoute(newId))
+                                    navController.navigate(NavRoutes.SessionDetails.createRoute(newId))
                                 },
                                 sessionRepository = sessionRepository
                             )
+
                         }
                         composable(NavRoutes.Agenda.route) {
                             // TODO : écran agenda

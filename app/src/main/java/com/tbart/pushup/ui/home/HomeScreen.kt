@@ -1,23 +1,33 @@
 package com.tbart.pushup.ui.home
 
+import android.R
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -27,7 +37,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tbart.pushup.ui.theme.PushUpTheme
 import com.tbart.pushup.data.repository.SessionRepository
+import kotlinx.coroutines.delay
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun HomeScreen(
     sessionRepository: SessionRepository,
@@ -63,6 +78,7 @@ fun HomeScreen(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 private fun HomeContent(
     uiState: HomeUiState,
@@ -79,6 +95,11 @@ private fun HomeContent(
             text = "Prêt pour votre séance ?",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = liveDateText(),
             textAlign = TextAlign.Center
         )
 
@@ -127,15 +148,22 @@ private fun HomeContent(
                 Text("Nouvelle séance")
             }
         } else {
-            Button(
-                onClick = onStartNewSession,
-                modifier = Modifier.padding(horizontal = 32.dp),
-                enabled = !uiState.isLoading
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.BottomCenter
             ) {
-                if (uiState.isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.size(16.dp))
-                } else {
-                    Text("Commencer ma séance")
+                FloatingActionButton(
+                    onClick = onStartNewSession,
+                    shape = RoundedCornerShape(12.dp), // coins arrondis personnalisés
+                    modifier = Modifier
+                        .padding(32.dp)
+                        .size(height = 45.dp, width = 320.dp)
+                ) {
+                    if (uiState.isLoading) {
+                        CircularProgressIndicator(modifier = Modifier.size(16.dp))
+                    } else {
+                        Text("Commencer ma séance")
+                    }
                 }
             }
         }
@@ -179,6 +207,7 @@ private fun StatsCard(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
@@ -195,6 +224,7 @@ fun HomeScreenPreview() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenWithActiveSessionPreview() {
@@ -211,6 +241,7 @@ fun HomeScreenWithActiveSessionPreview() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenFirstTimePreview() {
@@ -221,4 +252,23 @@ fun HomeScreenFirstTimePreview() {
             onResumeSession = {}
         )
     }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun liveDateText(): String {
+    var currentDateTime by remember { mutableStateOf(LocalDateTime.now()) }
+
+    // Met à jour toutes les secondes (tu peux ajuster la fréquence)
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(100L)
+            currentDateTime = LocalDateTime.now()
+        }
+    }
+
+    val formatter = DateTimeFormatter.ofPattern("dd MMM yyyy, HH:mm", Locale.getDefault())
+    val formattedDate = currentDateTime.format(formatter)
+
+    return formattedDate
 }
