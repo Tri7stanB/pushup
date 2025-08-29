@@ -6,29 +6,37 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.tbart.pushup.domain.model.Exercise
 import com.tbart.pushup.domain.model.ExerciseTemplate
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExercisesScreen(
-    viewModel: ExercisesViewModel = viewModel()
+    viewModel: ExercisesViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    // ⚡ Charger les données une seule fois
+    LaunchedEffect(Unit) {
+        viewModel.initData(context)
+    }
 
     val groups = listOf("Tous") + uiState.availableGroups
     var selectedGroup by remember { mutableStateOf("Tous") }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
         Text("Catalogue d'exercices", style = MaterialTheme.typography.headlineMedium)
 
         Spacer(Modifier.height(16.dp))

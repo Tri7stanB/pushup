@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Pompes classiques",
+    "bodyPart": "Poitrine",
+    "imageRes": "push_up"
+  },
+  {
+    "name": "Pompes diamant",
+    "bodyPart": "Triceps",
+    "imageRes": "diamond_push_up"
+  },
+  {
+    "name": "Pompes larges",
+    "bodyPart": "�paules",
+    "imageRes": "wide_push_up"
+  },
+  {
+    "name": "Pompes inclin�es",
+    "bodyPart": "Poitrine",
+    "imageRes": "incline_push_up"
+  },
+  {
+    "name": "Pompes d�clin�es",
+    "bodyPart": "Poitrine",
+    "imageRes": "decline_push_up"
+  }
+]

@@ -20,4 +20,10 @@ interface ExerciseTemplateDao {
 
     @Delete
     suspend fun delete(template: ExerciseTemplate)
+
+    @Insert
+    suspend fun insertAll(templates: List<ExerciseTemplate>) {
+        templates.forEach { insert(it) }
+    }
+
 }

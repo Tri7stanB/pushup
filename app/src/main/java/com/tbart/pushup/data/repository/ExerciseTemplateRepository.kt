@@ -20,4 +20,8 @@ class ExerciseTemplateRepository(
     suspend fun updateExerciseTemplate(template: ExerciseTemplate) {
         templateDao.update(template)
     }
+
+    suspend fun insertAll(templates: List<ExerciseTemplate>) {
+        templateDao.insertAll(templates)
+    }
 }

@@ -16,6 +16,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.pushup.BottomNavBar
 import com.tbart.pushup.data.database.AppDatabase
 import com.tbart.pushup.data.repository.ExerciseTemplateRepository
@@ -29,6 +31,9 @@ import com.tbart.pushup.ui.exercises.ExercisesScreen
 import com.tbart.pushup.ui.exercises.ExercisesViewModel
 import com.tbart.pushup.ui.exercises.ExercisesViewModelFactory
 import com.tbart.pushup.ui.theme.PushUpTheme
+import com.tbart.pushup.utils.loadExercisesFromJson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -36,12 +41,31 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Instance DB
+        // Instance unique DB avec callback
         val db = Room.databaseBuilder(
-                applicationContext,
-                AppDatabase::class.java,
-                "pushup-db"
-            ).fallbackToDestructiveMigration(false)
+            applicationContext,
+            AppDatabase::class.java,
+            "pushup-db"
+        )
+            .fallbackToDestructiveMigration()
+            .addCallback(object : RoomDatabase.Callback() {
+                override fun onCreate(dbSupport: SupportSQLiteDatabase) {
+                    super.onCreate(dbSupport)
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val exercises = loadExercisesFromJson(applicationContext)
+
+                        // ⚡ Ici on ouvre une instance temporaire sur la même DB
+                        val instance = Room.databaseBuilder(
+                            applicationContext,
+                            AppDatabase::class.java,
+                            "pushup-db"
+                        ).build()
+
+                        instance.exerciseTemplateDao().insertAll(exercises)
+                        instance.close()
+                    }
+                }
+            })
             .build()
 
         // Repository
